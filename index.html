@@ -30,6 +30,60 @@ footer{background:#082e23;color:#e8f6eb;padding:35px 0 20px}.foot{display:grid;g
 .float{position:fixed;bottom:18px;right:18px;z-index:9;background:#19c65a;color:white;padding:14px 19px;border-radius:50px;font-weight:900;box-shadow:0 8px 25px #0002}
 @media(max-width:850px){.links{display:none}.hero-grid{grid-template-columns:1fr}.visual{min-height:330px}.calc-card{grid-template-columns:1fr}.calc-left{border-right:0;border-bottom:1px solid #ffffff55;padding:0 0 22px}.benefit-grid{grid-template-columns:1fr 1fr}.operator-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){nav{height:66px}.hero{padding-top:45px}.hero h1{letter-spacing:-2px}.visual{transform:scale(.9);margin:-10px -15px}.calc-card{padding:20px}.operator-grid{gap:7px}.operator{min-height:90px}.benefit-grid,.steps,.foot{grid-template-columns:1fr}.cta{align-items:flex-start;flex-direction:column}.estimate{font-size:2rem}}
+
+/* NEXA CONVERT — Premium Green Fintech redesign */
+:root{--green:#19c65a;--lime:#a5f45e;--dark:#062d23;--ink:#10251d;--muted:#6a7c72;--pale:#f1faf3;--line:#dcebe0}
+body{background:#f6faf7}
+header{background:#062d23ed;border-bottom:1px solid #ffffff20}
+.brand{color:#fff}.brand small{color:#9df16b}
+.links{color:#e4f5e9}
+.links a:hover{color:#9df16b}
+nav .btn{background:linear-gradient(110deg,#8be84b,#19c65a);color:#073522}
+.hero{padding:76px 0 70px;background:radial-gradient(ellipse at 80% 45%,#176b47 0,transparent 39%),linear-gradient(115deg,#052d23 0%,#07583b 58%,#0b7044 100%);color:#fff}
+.hero p{color:#d0e9d8}
+.hero h1 .green,.hero h2 .green{color:#a5f45e}
+.tag{background:#ffffff19;color:#b4f58b;border:1px solid #ffffff25}
+.checks{color:#e4f5e9}
+.checks span:before{background:#a5f45e;color:#073522}
+.hero .btn.outline{background:transparent;border-color:#a5f45e;color:#fff}
+.glow{background:linear-gradient(135deg,#a5f45e,#1ac66a);opacity:.28}
+.phone{background:linear-gradient(155deg,#061e19,#119653);border-color:#061d18;box-shadow:0 28px 65px #001a10a8}
+.orbit{box-shadow:0 12px 30px #001c1245}
+.calc-section{padding:0 0 55px;background:linear-gradient(#07583b 0 52px,#f6faf7 52px)}
+.calc-card{grid-template-columns:1.25fr .75fr;gap:30px;padding:30px;border-radius:24px;background:#fff;color:var(--ink);box-shadow:0 20px 55px #063b2420;border:1px solid #e1eee5}
+.calc-left{padding-right:30px;border-right:1px solid #e3eee6}
+.calc-card h2{color:#103d2b}
+.calc-card .field label{color:#294638}
+.calc-card .field input,.calc-card .field select{border:1px solid #dcebe1;background:#f9fcfa}
+.calc-card .field input:focus,.calc-card .field select:focus{box-shadow:0 0 0 3px #19c65a20;border-color:#19c65a}
+.calc-card .estimate{color:#16ad50}
+.calc-card .btn{background:linear-gradient(110deg,#19b955,#8de94d);color:#073522}
+.calc-card .calc-left>p{color:#718178!important}
+.operators{padding:10px 0}
+.operator-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+.operator{min-height:78px;flex-direction:row;justify-content:flex-start;padding:12px 16px;border:1px solid #e1eee5;background:#f8fcf9;box-shadow:0 4px 12px #143d2008}
+.operator b{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#e4f8e9;color:#10a849;font-size:1.05rem}
+.operator small{font-size:.88rem}
+.benefits{padding-top:8px}
+.benefit{box-shadow:0 7px 20px #163d1b08}
+section.content{background:#fff}
+section.content[style]{background:#f2f8f4!important}
+.step{box-shadow:0 8px 22px #163d1b08}
+.cta{background:linear-gradient(110deg,#062d23,#087a48);box-shadow:0 14px 32px #06472a22}
+footer{background:#05271e}
+.float{background:linear-gradient(110deg,#16b951,#8be84b);color:#063522}
+@media(max-width:850px){
+ .calc-card{grid-template-columns:1fr}
+ .calc-left{border-right:0;border-bottom:1px solid #e3eee6;padding:0 0 24px}
+ .operator-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:560px){
+ .hero{padding:48px 0 58px}
+ .calc-card{padding:20px}
+ .operator-grid{grid-template-columns:repeat(2,1fr)}
+ .operator{min-height:66px;padding:9px}
+}
+
 </style>
 </head>
 <body>
@@ -61,7 +115,7 @@ footer{background:#082e23;color:#e8f6eb;padding:35px 0 20px}.foot{display:grid;g
 <div class="field"><label for="walletHolder">Nama pemilik akun</label><input id="walletHolder" placeholder="Nama pemilik akun"></div>
 </div>
 <div style="font-size:.88rem">Estimasi saldo diterima:</div><div class="estimate" id="hasil">Rp 80.000</div><button class="btn" id="order">➤ Pesan Sekarang　›</button><p style="font-size:.75rem;color:#d0ead9;margin:10px 0 0">Rate hanya simulasi. Konfirmasi rate final kepada admin sebelum mengirim pulsa.</p></div>
-<div class="operators"><h2>✦ Pilihan Operator</h2><div class="operator-grid"><div class="operator"><b>Ｔ</b><small>Telkomsel</small></div><div class="operator"><b>XL</b><small>XL</small></div><div class="operator"><b>AXIS</b><small>AXIS</small></div><div class="operator"><b>IO</b><small>Indosat</small></div><div class="operator"><b>３</b><small>Tri</small></div><div class="operator"><b>SF</b><small>Smartfren</small></div></div></div>
+<div class="operators"><h2>✦ Pilih Operator Pulsa</h2><p style="color:#718178;margin:0;font-size:.9rem">Operator yang tersedia untuk transaksi convert</p><div class="operator-grid"><div class="operator"><b>Ｔ</b><small>Telkomsel</small></div><div class="operator"><b>XL</b><small>XL</small></div><div class="operator"><b>AXIS</b><small>AXIS</small></div><div class="operator"><b>IO</b><small>Indosat</small></div><div class="operator"><b>３</b><small>Tri</small></div><div class="operator"><b>SF</b><small>Smartfren</small></div></div></div>
 </div></div></section>
 <section class="benefits"><div class="container benefit-grid"><div class="benefit"><i>⚡</i><div><strong>Proses Praktis</strong><small>Alur mudah dipahami</small></div></div><div class="benefit"><i>✓</i><div><strong>Konfirmasi Admin</strong><small>Detail dicek lebih dulu</small></div></div><div class="benefit"><i>◆</i><div><strong>Info Rate</strong><small>Tanyakan rate terbaru</small></div></div><div class="benefit"><i>☏</i><div><strong>Layanan WhatsApp</strong><small>Hubungi admin langsung</small></div></div></div></section>
 <section class="content" id="cara"><div class="container"><div class="section-head"><h2>Cara Order di <span class="green">NEXA CONVERT</span></h2><p>Ikuti langkah berikut dan pastikan detail transaksi sudah dikonfirmasi admin.</p></div><div class="steps"><div class="step"><div class="number">1</div><h3>Isi Detail</h3><p>Pilih operator dan masukkan nominal pulsa pada kalkulator.</p></div><div class="step"><div class="number">2</div><h3>Konfirmasi Admin</h3><p>Kirim detail melalui WhatsApp. Tunggu konfirmasi rate dan nomor tujuan resmi.</p></div><div class="step"><div class="number">3</div><h3>Ikuti Instruksi</h3><p>Kirim pulsa hanya setelah mendapat persetujuan dan instruksi dari admin.</p></div></div>
