@@ -62,14 +62,14 @@ footer{background:#05271e;color:#e8f6eb;padding:35px 0 20px}.foot{display:grid;g
 <body>
 <header><div class="container"><nav>
 <a class="brand" href="#"><span class="brand-mark">N</span><span>NEXA<small>CONVERT</small></span></a>
-<a class="btn" href="https://wa.me/628984814123" target="_blank" rel="noopener"><img class="btn-cs-avatar" src="pngtree-admin-and-customer-service-job-vacancies-png-image_9041264.png" alt="Bantuan Customer Service" loading="eager"> Bantuan Customer Service</a>
+<a class="btn" id="csBtn" href="https://wa.me/628984814123?text=Halo%20Admin%20Nexa%20Convert%2C%20saya%20ingin%20meminta%20bantuan%20customer%20service." target="_blank" rel="noopener"><img class="btn-cs-avatar" src="pngtree-admin-and-customer-service-job-vacancies-png-image_9041264.png" alt="Bantuan Customer Service" loading="eager"> Bantuan Customer Service</a>
 </nav><div class="links"><a href="#beranda">Beranda</a><a href="#cara">Cara Order</a><a href="#rate">Rate</a><a href="#status">Status</a><a href="#riwayat">Riwayat</a><a href="#testimoni">Testimoni</a><a href="#faq">FAQ</a><a href="#kontak">Kontak</a></div></div></header>
 <main>
 <section class="hero" id="beranda"><div class="container hero-grid">
 <div><span class="tag">⚡ Convert Pulsa · Aman · Cepat</span><h1>NEXA <span class="green">CONVERT</span></h1><h2>Solusi Convert Pulsa <span class="green">Terbaik!</span></h2>
 <p>Tukar pulsa Anda menjadi saldo e-wallet atau transfer dengan proses yang mudah. Cek estimasi dan konsultasikan transaksi langsung dengan admin kami.</p>
 <div class="checks"><span>Proses mudah</span><span>Info rate jelas</span><span>Konfirmasi admin</span></div>
-<a class="btn" href="#kalkulator">➤ Convert Sekarang　›</a>
+<div class="hero-actions"><a class="btn" href="#kalkulator">➤ Convert Sekarang　›</a><a class="btn outline" href="#rate">Lihat Rate</a></div></div>
 <div class="visual visual-phone-art">
 <img src="file_000000000e248211a01e892ddd06a175.png" alt="Ilustrasi tangan memegang smartphone NEXA CONVERT dengan logo provider Telkomsel, XL Axiata, AXIS, Indosat, Tri, dan Smartfren" loading="eager" fetchpriority="high">
 </div>
@@ -327,6 +327,20 @@ setInterval(()=>{
  renderTrxFeed();
 },45000);
 
+const csBtn=document.getElementById('csBtn');
+function getLatestOrderCode(){
+ const fromInput=document.getElementById('trackCode')?.value.trim().toUpperCase();
+ if(fromInput)return fromInput;
+ const saved=loadOrders();
+ return saved[0]?.code||'Belum ada';
+}
+function updateCsLink(){
+ if(!csBtn)return;
+ const code=getLatestOrderCode();
+ const msg=`Halo Admin Nexa Convert, saya ingin meminta bantuan customer service.\n\n• Kode Transaksi: ${code}\n\nMohon bantuannya ya min.`;
+ csBtn.href='https://wa.me/628984814123?text='+encodeURIComponent(msg);
+}
+
 document.getElementById('order').addEventListener('click',()=>{
  const n=Math.max(0,Number(nominal.value)||0),r=getSelectedRate();
  if(n<30000){alert('Masukkan nominal minimal Rp30.000.');return}
@@ -350,11 +364,13 @@ document.getElementById('order').addEventListener('click',()=>{
  const order={code,operator:op,sender,nominal:n,estimate:Math.round(n*r),created:new Date().toISOString(),status:'Menunggu konfirmasi admin'};
  const orders=loadOrders();orders.unshift(order);saveOrders(orders);
  pushLiveTransaction({phone:sender,operator:op,amount:n,mins:0});
+ updateCsLink();
  const message=`Halo Admin Nexa Convert, saya ingin menanyakan proses convert pulsa:\n\n• Kode Transaksi: ${code}\n• Operator: ${op}\n• Jumlah Pulsa: ${money(n)}\n• No. Pengirim: ${sender}\n\nDetail Tujuan:\n• Opsi Tujuan: ${payoutOption}\n• No. Rekening/E-Wallet: ${payoutAccount}\n• Atas Nama: ${payoutHolder}\n\nMohon konfirmasi rate dan instruksi transaksi sebelum saya mengirim pulsa.`;
  document.getElementById('trackCode').value=code;
  document.getElementById('trackResult').innerHTML=`Kode pesanan Anda: <strong>${code}</strong><br>Status awal: Menunggu konfirmasi admin. Simpan kode ini untuk pengecekan pada browser yang sama.`;
  window.open('https://wa.me/628984814123?text='+encodeURIComponent(message),'_blank','noopener');
 });
+document.getElementById('trackCode').addEventListener('input',updateCsLink);
 document.getElementById('trackBtn').addEventListener('click',()=>{
  const code=document.getElementById('trackCode').value.trim().toUpperCase(),o=loadOrders().find(x=>x.code===code);
  document.getElementById('trackResult').innerHTML=o?`Kode: <strong>${o.code}</strong><br>Provider: ${o.operator}<br>Nominal: ${money(o.nominal)}<br>Status: <strong>${o.status}</strong><br><small>Dibuat: ${new Date(o.created).toLocaleString('id-ID')}</small>`:'Kode tidak ditemukan di penyimpanan browser ini. Jika berganti perangkat/browser, hubungi admin melalui WhatsApp.';
@@ -384,6 +400,6 @@ document.getElementById('adminLogout').addEventListener('click',()=>{
  document.getElementById('adminPanel').hidden=true;document.getElementById('adminLock').hidden=false;document.getElementById('adminPass').value='';
 });
 document.getElementById('year').textContent=new Date().getFullYear();
-togglePayout();populateRateUI();
+togglePayout();populateRateUI();updateCsLink();
 </script>
 </body></html>
