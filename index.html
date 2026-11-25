@@ -92,6 +92,30 @@ footer{background:#05271e}
 .operator small{font-size:.82rem;font-weight:800;color:#294638}
 @media(max-width:560px){.operator{min-height:78px}.operator img{height:36px;max-width:105px}}
 
+
+/* Provider brand marks on hero visual */
+.orbit{width:116px;min-height:78px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.orbit img{display:block;width:92px;height:34px;object-fit:contain}
+.orbit span{font-size:.72rem;color:#65756d;font-weight:800}
+.orbit.five{bottom:2px;left:27%}
+.orbit.six{bottom:2px;right:25%}
+@media(max-width:850px){
+ .visual{min-height:390px}
+ .orbit.one{top:18px;left:0}
+ .orbit.two{top:22px;right:0}
+ .orbit.three{bottom:105px;left:0}
+ .orbit.four{bottom:105px;right:0}
+ .orbit.five{bottom:5px;left:17%}
+ .orbit.six{bottom:5px;right:17%}
+}
+@media(max-width:560px){
+ .visual{min-height:410px;transform:none;margin:0}
+ .orbit{width:104px;min-height:70px}
+ .orbit img{width:82px;height:29px}
+ .orbit.five{left:8%}
+ .orbit.six{right:8%}
+}
+
 </style>
 </head>
 <body>
@@ -106,7 +130,15 @@ footer{background:#05271e}
 <p>Tukar pulsa Anda menjadi saldo e-wallet atau transfer dengan proses yang mudah. Cek estimasi dan konsultasikan transaksi langsung dengan admin kami.</p>
 <div class="checks"><span>Proses mudah</span><span>Info rate jelas</span><span>Konfirmasi admin</span></div>
 <div class="hero-actions"><a class="btn" href="https://wa.me/628984814123" target="_blank" rel="noopener">☏ Order Sekarang　›</a><a class="btn outline" href="#kalkulator">Lihat Rate</a></div></div>
-<div class="visual"><div class="glow"></div><div class="phone"><div><div class="phone-logo">N</div><strong>NEXA<br>CONVERT</strong><small>Convert Pulsa Jadi Saldo Lebih Mudah</small></div></div><div class="orbit one">TELKOMSEL<span>Operator</span></div><div class="orbit two">XL<span>Operator</span></div><div class="orbit three">AXIS<span>Operator</span></div><div class="orbit four">INDOSAT · TRI<span>Operator</span></div></div>
+<div class="visual"><div class="glow"></div>
+<div class="phone"><div><div class="phone-logo">N</div><strong>NEXA<br>CONVERT</strong><small>Convert Pulsa Jadi Saldo Lebih Mudah</small></div></div>
+<div class="orbit one"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Telkomsel_(2021).svg" alt="Telkomsel"><span>Telkomsel</span></div>
+<div class="orbit two"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/XL_Axiata_2014.svg" alt="XL Axiata"><span>XL</span></div>
+<div class="orbit three"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Axis_logo.svg" alt="AXIS"><span>AXIS</span></div>
+<div class="orbit four"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Indosat_Ooredoo_Hutchison.svg" alt="Indosat"><span>Indosat</span></div>
+<div class="orbit five"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Three_logo.svg" alt="Tri"><span>Tri</span></div>
+<div class="orbit six"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Smartfren_logo.svg" alt="Smartfren"><span>Smartfren</span></div>
+</div>
 </div></section>
 <section class="calc-section" id="kalkulator"><div class="container"><div class="calc-card">
 <div class="calc-left"><h2>▦ Kalkulator Convert</h2><div class="field"><label for="nominal">Masukkan nominal pulsa Anda</label><input id="nominal" type="number" min="10000" step="1000" value="100000"></div><div class="field"><label for="operator">Pilih operator</label><select id="operator"><option value=".80">Telkomsel — contoh 80%</option><option value=".82">XL — contoh 82%</option><option value=".82">AXIS — contoh 82%</option><option value=".80">Indosat — contoh 80%</option><option value=".80">Tri — contoh 80%</option><option value=".75">Smartfren — contoh 75%</option></select></div>
