@@ -322,22 +322,31 @@ setInterval(()=>{renderTrxFeed()},30000);
 setInterval(()=>{
  trxFeedData.unshift(createSampleTrx(0));
  if(trxFeedData.length>35)trxFeedData.pop();
- saveTrxFeed(trxFeedData);let payoutSummary='';
-if(payout.value==='bank'){
- const bank=document.getElementById('bankName').value,account=document.getElementById('bankAccount').value.trim(),holder=document.getElementById('bankHolder').value.trim();
- if(!bank||!account||!holder){alert('Lengkapi nama bank, nomor rekening, dan nama pemilik rekening.');return}
- payoutSummary=`${bank} - ${account} a.n ${holder}`;
-}else{
- const wallet=document.getElementById('walletName').value,number=document.getElementById('walletNumber').value.trim(),holder=document.getElementById('walletHolder').value.trim();
- if(!wallet||!number||!holder){alert('Lengkapi E-Wallet, nomor akun, dan nama pemilik akun.');return}
- payoutSummary=`${wallet} - ${number} a.n ${holder}`;
-}
-const op=providerData[Number(operator.value)]?.name||'Telkomsel',code=makeOrderCode();
-const order={code,operator:op,sender,nominal:n,estimate:Math.round(n*r),created:new Date().toISOString(),status:'Menunggu konfirmasi admin'};
-const orders=loadOrders();orders.unshift(order);saveOrders(orders);
-pushLiveTransaction({phone:sender,operator:op,amount:n,mins:0});
-const rateLabel=(r*100).toFixed(1).replace('.0','');
-const message=`Halo *BOS CONVERT*, mau convert pulsa:\n• Kode: *${code}*\n• Provider: ${op} (${sender})\n• Nominal: ${money(n)} (Rate ${rateLabel}% → *${money(n*r)}*)\n• Cair ke: ${payoutSummary}\n\nMohon info rate final & instruksi kirim pulsanya.`;
+ saveTrxFeed(trxFeedData);
+ renderTrxFeed();
+},45000);
+
+document.getElementById('order').addEventListener('click',()=>{
+ const n=Math.max(0,Number(nominal.value)||0),r=getSelectedRate();
+ if(n<30000){alert('Masukkan nominal minimal Rp30.000.');return}
+ const sender=document.getElementById('sender').value.trim();
+ if(!sender){alert('Isi nomor HP pengirim pulsa terlebih dahulu.');document.getElementById('sender').focus();return}
+ let payoutSummary='';
+ if(payout.value==='bank'){
+  const bank=document.getElementById('bankName').value,account=document.getElementById('bankAccount').value.trim(),holder=document.getElementById('bankHolder').value.trim();
+  if(!bank||!account||!holder){alert('Lengkapi nama bank, nomor rekening, dan nama pemilik rekening.');return}
+  payoutSummary=`${bank} - ${account} a.n ${holder}`;
+ }else{
+  const wallet=document.getElementById('walletName').value,number=document.getElementById('walletNumber').value.trim(),holder=document.getElementById('walletHolder').value.trim();
+  if(!wallet||!number||!holder){alert('Lengkapi E-Wallet, nomor akun, dan nama pemilik akun.');return}
+  payoutSummary=`${wallet} - ${number} a.n ${holder}`;
+ }
+ const op=providerData[Number(operator.value)]?.name||'Telkomsel',code=makeOrderCode();
+ const order={code,operator:op,sender,nominal:n,estimate:Math.round(n*r),created:new Date().toISOString(),status:'Menunggu konfirmasi admin'};
+ const orders=loadOrders();orders.unshift(order);saveOrders(orders);
+ pushLiveTransaction({phone:sender,operator:op,amount:n,mins:0});
+ const rateLabel=(r*100).toFixed(1).replace('.0','');
+ const message=`Halo *NEXA CONVERT*, mau convert pulsa:\n• Kode: *${code}*\n• Provider: ${op} (${sender})\n• Nominal: ${money(n)} (Rate ${rateLabel}% → *${money(n*r)}*)\n• Cair ke: ${payoutSummary}\n\nMohon info rate final & instruksi kirim pulsanya.`;
  document.getElementById('trackCode').value=code;
  document.getElementById('trackResult').innerHTML=`Kode pesanan Anda: <strong>${code}</strong><br>Status awal: Menunggu konfirmasi admin. Simpan kode ini untuk pengecekan pada browser yang sama.`;
  window.open('https://wa.me/628984814123?text='+encodeURIComponent(message),'_blank','noopener');
