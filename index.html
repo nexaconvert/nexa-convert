@@ -331,22 +331,25 @@ document.getElementById('order').addEventListener('click',()=>{
  if(n<30000){alert('Masukkan nominal minimal Rp30.000.');return}
  const sender=document.getElementById('sender').value.trim();
  if(!sender){alert('Isi nomor HP pengirim pulsa terlebih dahulu.');document.getElementById('sender').focus();return}
- let payoutSummary='';
+ let payoutOption='',payoutAccount='',payoutHolder='';
  if(payout.value==='bank'){
   const bank=document.getElementById('bankName').value,account=document.getElementById('bankAccount').value.trim(),holder=document.getElementById('bankHolder').value.trim();
   if(!bank||!account||!holder){alert('Lengkapi nama bank, nomor rekening, dan nama pemilik rekening.');return}
-  payoutSummary=`${bank} - ${account} a.n ${holder}`;
+  payoutOption=bank;
+  payoutAccount=account;
+  payoutHolder=holder;
  }else{
   const wallet=document.getElementById('walletName').value,number=document.getElementById('walletNumber').value.trim(),holder=document.getElementById('walletHolder').value.trim();
   if(!wallet||!number||!holder){alert('Lengkapi E-Wallet, nomor akun, dan nama pemilik akun.');return}
-  payoutSummary=`${wallet} - ${number} a.n ${holder}`;
+  payoutOption=wallet;
+  payoutAccount=number;
+  payoutHolder=holder;
  }
  const op=providerData[Number(operator.value)]?.name||'Telkomsel',code=makeOrderCode();
  const order={code,operator:op,sender,nominal:n,estimate:Math.round(n*r),created:new Date().toISOString(),status:'Menunggu konfirmasi admin'};
  const orders=loadOrders();orders.unshift(order);saveOrders(orders);
  pushLiveTransaction({phone:sender,operator:op,amount:n,mins:0});
- const rateLabel=(r*100).toFixed(1).replace('.0','');
- const message=`Halo *NEXA CONVERT*, mau convert pulsa:\n• Kode: *${code}*\n• Provider: ${op} (${sender})\n• Nominal: ${money(n)} Cair ke: ${payoutSummary}\n\nMohon Konfirmasi Min & instruksi kirim pulsanya.`;
+ const message=`Halo Admin Nexa Convert, saya ingin menanyakan proses convert pulsa:\n\n• Kode Transaksi: ${code}\n• Operator: ${op}\n• Jumlah Pulsa: ${money(n)}\n• No. Pengirim: ${sender}\n\nDetail Tujuan:\n• Opsi Tujuan: ${payoutOption}\n• No. Rekening/E-Wallet: ${payoutAccount}\n• Atas Nama: ${payoutHolder}\n\nMohon konfirmasi rate dan instruksi transaksi sebelum saya mengirim pulsa.`;
  document.getElementById('trackCode').value=code;
  document.getElementById('trackResult').innerHTML=`Kode pesanan Anda: <strong>${code}</strong><br>Status awal: Menunggu konfirmasi admin. Simpan kode ini untuk pengecekan pada browser yang sama.`;
  window.open('https://wa.me/628984814123?text='+encodeURIComponent(message),'_blank','noopener');
