@@ -346,7 +346,7 @@ document.getElementById('order').addEventListener('click',()=>{
  const orders=loadOrders();orders.unshift(order);saveOrders(orders);
  pushLiveTransaction({phone:sender,operator:op,amount:n,mins:0});
  const rateLabel=(r*100).toFixed(1).replace('.0','');
- const message=`Halo *NEXA CONVERT*, mau convert pulsa:\n• Kode: *${code}*\n• Provider: ${op} (${sender})\n• Nominal: ${money(n)} (Rate ${rateLabel}% → *${money(n*r)}*)\n• Cair ke: ${payoutSummary}\n\nMohon info rate final & instruksi kirim pulsanya.`;
+ const message=`Halo *NEXA CONVERT*, mau convert pulsa:\n• Kode: *${code}*\n• Provider: ${op} (${sender})\n• Nominal: ${money(n)} Cair ke: ${payoutSummary}\n\nMohon Konfirmasi Min & instruksi kirim pulsanya.`;
  document.getElementById('trackCode').value=code;
  document.getElementById('trackResult').innerHTML=`Kode pesanan Anda: <strong>${code}</strong><br>Status awal: Menunggu konfirmasi admin. Simpan kode ini untuk pengecekan pada browser yang sama.`;
  window.open('https://wa.me/628984814123?text='+encodeURIComponent(message),'_blank','noopener');
