@@ -37,7 +37,7 @@ section.content{padding:65px 0;background:#fff}section.content.alt-bg{background
 /* Riwayat Transaksi */
 .trx-box{max-width:640px;margin:auto;padding:16px 20px}
 .trx-handle{width:46px;height:4px;border-radius:999px;background:#cbd5e1;margin:0 auto 14px}
-.trx-feed{display:grid;grid-template-columns:1fr;gap:10px;max-height:460px;overflow-y:auto;padding-right:2px}
+.trx-feed{display:grid;grid-template-columns:1fr;gap:10px;max-height:540px;overflow-y:auto;padding-right:4px}
 .trx-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #e5efe8;border-radius:12px;background:#fff;box-shadow:0 2px 8px #143d2006;animation:trxFade .35s ease}
 @keyframes trxFade{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 .trx-logo-wrap{width:38px;height:38px;border-radius:10px;background:#f4faf6;border:1px solid #e6f0e9;display:grid;place-items:center;padding:6px;flex:none}
@@ -256,7 +256,7 @@ document.getElementById('trackBtn').addEventListener('click',()=>{
  document.getElementById('trackResult').innerHTML=o?`Kode: <strong>${o.code}</strong><br>Provider: ${o.operator}<br>Nominal: ${money(o.nominal)}<br>Status: <strong>${o.status}</strong><br><small>Dibuat: ${new Date(o.created).toLocaleString('id-ID')}</small>`:'Kode tidak ditemukan di penyimpanan browser ini. Jika berganti perangkat/browser, hubungi admin melalui WhatsApp.';
 });
 
-/* Riwayat Transaksi */
+/* Riwayat Transaksi (30 transaksi, Rp30.000 - Rp4.250.000) */
 const trxPrefixes=[
  {idx:0,p:['0812','0813','0821','0822','0851','0852']},
  {idx:1,p:['0817','0818','0819','0859','0877','0878']},
@@ -265,7 +265,12 @@ const trxPrefixes=[
  {idx:4,p:['0895','0896','0897','0898','0899']},
  {idx:5,p:['0881','0882','0883','0884','0885','0886','0887','0888','0889']}
 ];
-const trxNominals=[10000,15000,20000,22000,25000,28000,30000,50000,63000,75000,97000,100000,150000,200000,290000,300000];
+const trxNominals=[
+ 30000,35000,40000,45000,50000,60000,75000,85000,90000,100000,
+ 125000,150000,175000,200000,250000,300000,350000,400000,450000,500000,
+ 600000,750000,850000,1000000,1200000,1500000,1750000,2000000,2350000,
+ 2500000,2800000,3000000,3250000,3500000,3850000,4000000,4250000
+];
 function maskPhone(raw){
  const clean=String(raw||'').replace(/\D/g,'');
  if(clean.length>=7)return clean.slice(0,5)+'****'+clean.slice(-2);
@@ -287,7 +292,12 @@ function createSampleTrx(mins){
  const amt=trxNominals[Math.floor(Math.random()*trxNominals.length)];
  return {phone:maskPhone(''),operator:prov.name,logo:rateLogos[group.idx],amount:amt,mins};
 }
-let trxFeedData=[13,41,60,65,72,85,120,130,145,160,180,195].map(m=>createSampleTrx(m));
+const initialTrxMinutes=[
+ 2,5,9,14,19,24,31,38,44,52,
+ 60,68,75,84,95,110,125,138,150,165,
+ 185,205,230,255,280,310,340,375,415,460
+];
+let trxFeedData=initialTrxMinutes.map(m=>createSampleTrx(m));
 function renderTrxFeed(){
  const box=document.getElementById('trxFeed');
  if(!box)return;
@@ -297,9 +307,9 @@ renderTrxFeed();
 setInterval(()=>{
  trxFeedData=trxFeedData.map(x=>({...x,mins:x.mins+1}));
  trxFeedData.unshift(createSampleTrx(0));
- if(trxFeedData.length>15)trxFeedData.pop();
+ if(trxFeedData.length>35)trxFeedData.pop();
  renderTrxFeed();
-},25000);
+},30000);
 
 function renderRateEditors(){
  document.getElementById('rateEditors').innerHTML=providerData.map((p,i)=>`<div class="rate-edit"><label for="rate-${i}">${p.name} (%)</label><input id="rate-${i}" type="number" min="1" max="100" step=".1" value="${(rates[i]*100).toFixed(1)}"></div>`).join('');
