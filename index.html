@@ -198,7 +198,7 @@ const rateLogos=[
  'https://commons.wikimedia.org/wiki/Special:FilePath/Three_logo.svg',
  'https://commons.wikimedia.org/wiki/Special:FilePath/Smartfren_logo.svg'
 ];
-const RATE_KEY='nexa_rates_v1',ORDER_KEY='nexa_orders_v1';
+const RATE_KEY='nexa_rates_v1',ORDER_KEY='nexa_orders_v1',TRX_FEED_KEY='nexa_trx_feed_v2';
 const normalizeRates=raw=>{
  if(!Array.isArray(raw)||raw.length!==providerData.length)return providerData.map(x=>x.rate);
  return raw.map((val,idx)=>{
@@ -228,6 +228,104 @@ function update(){const n=Math.max(0,Number(nominal.value)||0),r=getSelectedRate
 function togglePayout(){const bank=payout.value==='bank';document.getElementById('bankFields').hidden=!bank;document.getElementById('ewalletFields').hidden=bank}
 nominal.addEventListener('input',update);operator.addEventListener('change',update);payout.addEventListener('change',togglePayout);
 function makeOrderCode(){const d=new Date(),date=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');return 'NX-'+date+'-'+Math.floor(1000+Math.random()*9000)}
+
+/* Riwayat Transaksi (30 transaksi, Rp30.000 - Rp4.250.000, awalan realistis per provider) */
+const providerPrefixes={
+ Telkomsel:['0811','0812','0813','0821','0822','0823','0851','0852','0853'],
+ XL:['0817','0818','0819','0859','0877','0878'],
+ AXIS:['0831','0832','0833','0838'],
+ Indosat:['0814','0815','0816','0855','0856','0857','0858'],
+ Tri:['0895','0896','0897','0898','0899'],
+ Smartfren:['0881','0882','0883','0884','0885','0886','0887','0888','0889']
+};
+const trxNominals=[
+ 30000,35000,40000,45000,50000,60000,75000,85000,90000,100000,
+ 125000,150000,175000,200000,250000,300000,350000,400000,450000,500000,
+ 600000,750000,850000,1000000,1200000,1500000,1750000,2000000,2350000,
+ 2500000,2800000,3000000,3250000,3500000,3850000,4000000,4250000
+];
+function detectProviderByPhone(rawPhone){
+ const clean=String(rawPhone||'').replace(/\D/g,'');
+ const norm=clean.startsWith('62')?'0'+clean.slice(2):clean;
+ for(const [opName,prefixes] of Object.entries(providerPrefixes)){
+  if(prefixes.some(p=>norm.startsWith(p)))return opName;
+ }
+ return null;
+}
+function generatePhoneForProvider(opName){
+ const list=providerPrefixes[opName]||providerPrefixes.Telkomsel;
+ const pre=list[Math.floor(Math.random()*list.length)];
+ const d5=Math.floor(Math.random()*10);
+ const last2=String(Math.floor(Math.random()*100)).padStart(2,'0');
+ return `${pre}${d5}****${last2}`;
+}
+function maskPhone(raw,opName){
+ const clean=String(raw||'').replace(/\D/g,'');
+ const norm=clean.startsWith('62')?'0'+clean.slice(2):clean;
+ if(norm.length>=7)return norm.slice(0,5)+'****'+norm.slice(-2);
+ return generatePhoneForProvider(opName);
+}
+function getProviderLogo(opName){
+ const idx=providerData.findIndex(p=>p.name.toLowerCase()===String(opName||'').toLowerCase());
+ return rateLogos[idx>=0?idx:0];
+}
+function formatAgo(mins){
+ if(mins<1)return 'baru saja';
+ if(mins<60)return `${mins} menit yang lalu`;
+ const hrs=Math.floor(mins/60);
+ return hrs===1?'sejam yang lalu':`${hrs} jam yang lalu`;
+}
+function createSampleTrx(mins){
+ const idx=Math.floor(Math.random()*providerData.length);
+ const prov=providerData[idx];
+ const amt=trxNominals[Math.floor(Math.random()*trxNominals.length)];
+ return {phone:generatePhoneForProvider(prov.name),operator:prov.name,logo:rateLogos[idx],amount:amt,mins,ts:Date.now()-mins*60000};
+}
+function createLiveTrxEntry({phone,operator,amount,mins=0}){
+ const detected=detectProviderByPhone(phone);
+ const finalOp=detected||operator||'Telkomsel';
+ return {phone:maskPhone(phone,finalOp),operator:finalOp,logo:getProviderLogo(finalOp),amount:Number(amount)||0,mins:Number(mins)||0,ts:Date.now()-(Number(mins)||0)*60000};
+}
+const initialTrxMinutes=[
+ 2,5,9,14,19,24,31,38,44,52,
+ 60,68,75,84,95,110,125,138,150,165,
+ 185,205,230,255,280,310,340,375,415,460
+];
+const loadSavedTrxFeed=()=>{
+ try{
+  const raw=JSON.parse(localStorage.getItem(TRX_FEED_KEY));
+  return Array.isArray(raw)&&raw.length?raw:null;
+ }catch{return null}
+};
+const saveTrxFeed=list=>{
+ try{localStorage.setItem(TRX_FEED_KEY,JSON.stringify(list.slice(0,35)))}catch{}
+};
+let trxFeedData=loadSavedTrxFeed()||initialTrxMinutes.map(m=>createSampleTrx(m));
+function renderTrxFeed(){
+ const box=document.getElementById('trxFeed');
+ if(!box)return;
+ const now=Date.now();
+ box.innerHTML=trxFeedData.map(t=>{
+  const elapsed=typeof t.ts==='number'?Math.max(0,Math.floor((now-t.ts)/60000)):(Number(t.mins)||0);
+  return `<div class="trx-item"><div class="trx-logo-wrap"><img src="${t.logo}" alt="Logo ${t.operator}" loading="lazy"></div><div class="trx-meta"><div class="trx-text">${t.phone} Berhasil Convert ${t.operator} ${money(t.amount).replace(' ','')}</div><div class="trx-ago">${formatAgo(elapsed)}</div></div></div>`;
+ }).join('');
+}
+function pushLiveTransaction(payload){
+ const entry=createLiveTrxEntry(payload);
+ trxFeedData.unshift(entry);
+ if(trxFeedData.length>35)trxFeedData.pop();
+ saveTrxFeed(trxFeedData);
+ renderTrxFeed();
+}
+renderTrxFeed();
+setInterval(()=>{renderTrxFeed()},30000);
+setInterval(()=>{
+ trxFeedData.unshift(createSampleTrx(0));
+ if(trxFeedData.length>35)trxFeedData.pop();
+ saveTrxFeed(trxFeedData);
+ renderTrxFeed();
+},45000);
+
 document.getElementById('order').addEventListener('click',()=>{
  const n=Math.max(0,Number(nominal.value)||0),r=getSelectedRate();
  if(n<10000){alert('Masukkan nominal minimal Rp10.000.');return}
@@ -246,6 +344,7 @@ document.getElementById('order').addEventListener('click',()=>{
  const op=providerData[Number(operator.value)]?.name||'Telkomsel',code=makeOrderCode();
  const order={code,operator:op,sender,nominal:n,estimate:Math.round(n*r),created:new Date().toISOString(),status:'Menunggu konfirmasi admin'};
  const orders=loadOrders();orders.unshift(order);saveOrders(orders);
+ pushLiveTransaction({phone:sender,operator:op,amount:n,mins:0});
  const message=`Halo NEXA CONVERT, saya ingin mengajukan convert pulsa.\nKode pesanan: ${code}\nOperator: ${op}\nNomor HP pengirim: ${sender}\nNominal pulsa: ${money(n)}\nRate simulasi: ${(r*100).toFixed(1)}%\nEstimasi saldo: ${money(n*r)}\n${payoutInfo}\n\nMohon konfirmasi rate final, biaya (jika ada), dan instruksi transaksi.`;
  document.getElementById('trackCode').value=code;
  document.getElementById('trackResult').innerHTML=`Kode pesanan Anda: <strong>${code}</strong><br>Status awal: Menunggu konfirmasi admin. Simpan kode ini untuk pengecekan pada browser yang sama.`;
@@ -255,61 +354,6 @@ document.getElementById('trackBtn').addEventListener('click',()=>{
  const code=document.getElementById('trackCode').value.trim().toUpperCase(),o=loadOrders().find(x=>x.code===code);
  document.getElementById('trackResult').innerHTML=o?`Kode: <strong>${o.code}</strong><br>Provider: ${o.operator}<br>Nominal: ${money(o.nominal)}<br>Status: <strong>${o.status}</strong><br><small>Dibuat: ${new Date(o.created).toLocaleString('id-ID')}</small>`:'Kode tidak ditemukan di penyimpanan browser ini. Jika berganti perangkat/browser, hubungi admin melalui WhatsApp.';
 });
-
-/* Riwayat Transaksi (30 transaksi, Rp30.000 - Rp4.250.000) */
-const trxPrefixes=[
- {idx:0,p:['0812','0813','0821','0822','0851','0852']},
- {idx:1,p:['0817','0818','0819','0859','0877','0878']},
- {idx:2,p:['0831','0832','0833','0838']},
- {idx:3,p:['0814','0815','0816','0855','0856','0857','0858']},
- {idx:4,p:['0895','0896','0897','0898','0899']},
- {idx:5,p:['0881','0882','0883','0884','0885','0886','0887','0888','0889']}
-];
-const trxNominals=[
- 30000,35000,40000,45000,50000,60000,75000,85000,90000,100000,
- 125000,150000,175000,200000,250000,300000,350000,400000,450000,500000,
- 600000,750000,850000,1000000,1200000,1500000,1750000,2000000,2350000,
- 2500000,2800000,3000000,3250000,3500000,3850000,4000000,4250000
-];
-function maskPhone(raw){
- const clean=String(raw||'').replace(/\D/g,'');
- if(clean.length>=7)return clean.slice(0,5)+'****'+clean.slice(-2);
- const group=trxPrefixes[Math.floor(Math.random()*trxPrefixes.length)];
- const pre=group.p[Math.floor(Math.random()*group.p.length)];
- const d5=Math.floor(Math.random()*10);
- const last2=String(Math.floor(Math.random()*100)).padStart(2,'0');
- return `${pre}${d5}****${last2}`;
-}
-function formatAgo(mins){
- if(mins<1)return 'baru saja';
- if(mins<60)return `${mins} menit yang lalu`;
- const hrs=Math.floor(mins/60);
- return hrs===1?'sejam yang lalu':`${hrs} jam yang lalu`;
-}
-function createSampleTrx(mins){
- const group=trxPrefixes[Math.floor(Math.random()*trxPrefixes.length)];
- const prov=providerData[group.idx];
- const amt=trxNominals[Math.floor(Math.random()*trxNominals.length)];
- return {phone:maskPhone(''),operator:prov.name,logo:rateLogos[group.idx],amount:amt,mins};
-}
-const initialTrxMinutes=[
- 2,5,9,14,19,24,31,38,44,52,
- 60,68,75,84,95,110,125,138,150,165,
- 185,205,230,255,280,310,340,375,415,460
-];
-let trxFeedData=initialTrxMinutes.map(m=>createSampleTrx(m));
-function renderTrxFeed(){
- const box=document.getElementById('trxFeed');
- if(!box)return;
- box.innerHTML=trxFeedData.map(t=>`<div class="trx-item"><div class="trx-logo-wrap"><img src="${t.logo}" alt="Logo ${t.operator}" loading="lazy"></div><div class="trx-meta"><div class="trx-text">${t.phone} Berhasil Convert ${t.operator} ${money(t.amount).replace(' ','')}</div><div class="trx-ago">${formatAgo(t.mins)}</div></div></div>`).join('');
-}
-renderTrxFeed();
-setInterval(()=>{
- trxFeedData=trxFeedData.map(x=>({...x,mins:x.mins+1}));
- trxFeedData.unshift(createSampleTrx(0));
- if(trxFeedData.length>35)trxFeedData.pop();
- renderTrxFeed();
-},30000);
 
 function renderRateEditors(){
  document.getElementById('rateEditors').innerHTML=providerData.map((p,i)=>`<div class="rate-edit"><label for="rate-${i}">${p.name} (%)</label><input id="rate-${i}" type="number" min="1" max="100" step=".1" value="${(rates[i]*100).toFixed(1)}"></div>`).join('');
